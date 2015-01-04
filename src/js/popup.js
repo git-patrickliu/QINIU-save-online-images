@@ -82,7 +82,7 @@ var autoLoginHelper = {
             template = trTplFun;
 
         //从localstorage获取数据
-        chrome.storage.local.get('accounts', function(obj) {
+        chrome.storage.sync.get('accounts', function(obj) {
             var accounts = obj['accounts'],
                 dev = accounts['dev'],
                 oa = accounts['oa'],
@@ -171,7 +171,7 @@ var autoLoginHelper = {
 
             envData && envData[mainAccount] && envData[mainAccount][account] && delete envData[mainAccount][account];
 
-            chrome.storage.local.set({
+            chrome.storage.sync.set({
                 accounts: autoLoginHelper.accounts
             }, function() {
                 window.location.reload();
@@ -204,7 +204,7 @@ var autoLoginHelper = {
             $parentTd.replaceWith($('<td class="modify-pwd" data-mainAccount="'+ mainAccount +'" data-account="' + account +'" data-env="' + env +'">' + value + '</td>'));
 
             //同步到chrome.storage
-            chrome.storage.local.set({
+            chrome.storage.sync.set({
                 accounts: autoLoginHelper.accounts
             });
         });

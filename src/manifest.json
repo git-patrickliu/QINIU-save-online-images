@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "快捷登录企业QQ账户中心小助手",
-    "version": "0.7",
+    "version": "0.9.1",
     "background": {
         "scripts": ["./js/jquery-1.9.1.js", "./js/background.js"]
     },

@@ -12,3 +12,12 @@ changelog
 
 ### 0.7
 1. 优化代码结构
+
+### 0.8
+1. 换上圣诞帽
+
+### 0.9
+1. user storage.sync to sync data
+
+### 0.9.1
+1. sync local data
