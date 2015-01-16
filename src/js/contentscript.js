@@ -100,7 +100,7 @@ if(!env) {
                 'accountEnvHash': {}
             };
             localAccount = obj;
-            chrome.storage.sync.set({
+            chrome.storage.local.set({
                 'accounts': localAccount
             });
         } else {
@@ -141,7 +141,7 @@ if(!env) {
 
             //设置账号的环境
             localAccount['accountEnvHash'][crtAccount] = env;
-            chrome.storage.sync.set({'accounts': localAccount});
+            chrome.storage.local.set({'accounts': localAccount});
         }
     });
 

@@ -181,7 +181,7 @@ var contextMenuId = chrome.contextMenus.create({
             deleteCookies = function(env, destUrl, account) {
                 deleteRelatedCookies(env, function() {
                     //先获取一下pwd
-                    chrome.storage.sync.get('accounts', function(obj) {
+                    chrome.storage.local.get('accounts', function(obj) {
                         var accounts = obj['accounts'],
                             accountPwdHash = accounts['accountPwdHash'],
                             pwd = accountPwdHash[account] || accounts['defaultPwd'];
@@ -219,7 +219,7 @@ var contextMenuId = chrome.contextMenus.create({
 
         if(env === '') {
             //拉了一下保存的数据
-            chrome.storage.sync.get('accounts', function(obj) {
+            chrome.storage.local.get('accounts', function(obj) {
                 var accounts = obj['accounts'],
                     accountEnvHash = accounts['accountEnvHash'];
 
@@ -237,32 +237,21 @@ var contextMenuId = chrome.contextMenus.create({
     }
 });
 // 获取accounts 数据，这个保存在chrome插件的storage当中, 和localStorage稍有不同，具体可见官网介绍
-// 因为之前的版本是用的是chrome.storage.local，这次我们使用chrome.storage.sync
-// 所以要把之前的chrome.storage.local.get('accounts')的数据同步过来
 chrome.storage.local.get('accounts', function(obj) {
-    if(!$.isEmptyObject(obj)) {
-        chrome.storage.sync.set({
+    if ($.isEmptyObject(obj)) {
+        obj = {
+            'dev': {},
+            'oa': {},
+            'ol': {},
+            'accountPwdHash': {},
+            'defaultPwd': '',
+            'accountEnvHash': {}
+        };
+        chrome.storage.local.set({
             'accounts': obj
         });
     }
-
-    chrome.storage.sync.get('accounts', function(obj) {
-        if ($.isEmptyObject(obj)) {
-            obj = {
-                'dev': {},
-                'oa': {},
-                'ol': {},
-                'accountPwdHash': {},
-                'defaultPwd': '',
-                'accountEnvHash': {}
-            };
-            chrome.storage.sync.set({
-                'accounts': obj
-            });
-        }
-    });
 });
-
 // background.js当中进行监听来自contentscript 或是popup.html中的请求
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
@@ -294,7 +283,7 @@ chrome.runtime.onMessage.addListener(
             var account = request.account,
                 pwd = request.pwd;
 
-            chrome.storage.sync.get('accounts', function(obj) {
+            chrome.storage.local.get('accounts', function(obj) {
                 var localAccount = {};
                 if ($.isEmptyObject(obj)) {
                     obj = {
@@ -306,7 +295,7 @@ chrome.runtime.onMessage.addListener(
                         'accountEnvHash': {}
                     };
                     localAccount = obj;
-                    chrome.storage.sync.set({
+                    chrome.storage.local.set({
                         'accounts': localAccount
                     });
                 } else {
@@ -318,7 +307,7 @@ chrome.runtime.onMessage.addListener(
                 accountPwdHash[account] = pwd;
 
                 //保存至chrome.storage
-                chrome.storage.sync.set({
+                chrome.storage.local.set({
                     'accounts': localAccount
                 });
             });

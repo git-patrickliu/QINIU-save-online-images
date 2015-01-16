@@ -21,3 +21,6 @@ changelog
 
 ### 0.9.1
 1. sync local data
+
+### 0.9.2
+1.因为bug, revert to 0.8
