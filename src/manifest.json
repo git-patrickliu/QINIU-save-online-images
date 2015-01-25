@@ -1,9 +1,9 @@
 {
     "manifest_version": 2,
     "name": "快捷登录企业QQ账户中心小助手",
-    "version": "0.9.2",
+    "version": "0.9.3",
     "background": {
-        "scripts": ["./js/jquery-1.9.1.js", "./js/background.js"]
+        "scripts": ["js/jquery-1.9.1.js", "js/background.js"]
     },
     "content_scripts": [{
         "matches": [
@@ -15,20 +15,20 @@
             "http://oaid.b.qq.com/*",
             "https://xui.ptlogin2.qq.com/*"
         ],
-        "js": ["./js/jquery-1.9.1.js", "./js/contentscript.js"],
+        "js": ["js/jquery-1.9.1.js", "js/contentscript.js"],
         "all_frames": true
     }],
     "icons": {
-        "16": "./img/eim_16.png",
-        "48": "./img/eim_48.png",
-        "128": "./img/eim_128.png"
+        "16": "img/eim_16.png",
+        "48": "img/eim_48.png",
+        "128": "img/eim_128.png"
     },
     "browser_action": {
-        "default_icon": "./img/eim_16.png",
+        "default_icon": "img/eim_16.png",
         "default_title": "快捷登陆企业QQ账户中心小助手",
-        "default_popup": "./html/popup.html"
+        "default_popup": "html/popup.html"
     },
-    "options_page": "./html/options.html",
+    "options_page": "html/options.html",
     "permissions": [
         "http://*/",
         "https://*/",

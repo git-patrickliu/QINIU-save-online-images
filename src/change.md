@@ -24,3 +24,6 @@ changelog
 
 ### 0.9.2
 1.因为bug, revert to 0.8
+
+### 0.9.3
+1. manifest.json 里面出现./ 会导致crash refer to https://code.google.com/p/chromium/issues/detail?id=437675
