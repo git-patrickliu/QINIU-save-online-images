@@ -27,3 +27,6 @@ changelog
 
 ### 0.9.3
 1. manifest.json 里面出现./ 会导致crash refer to https://code.google.com/p/chromium/issues/detail?id=437675
+
+### 0.9.4
+1. add storage sync api

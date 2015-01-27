@@ -181,7 +181,7 @@ var contextMenuId = chrome.contextMenus.create({
             deleteCookies = function(env, destUrl, account) {
                 deleteRelatedCookies(env, function() {
                     //先获取一下pwd
-                    chrome.storage.local.get('accounts', function(obj) {
+                    chrome.storage.sync.get('accounts', function(obj) {
                         var accounts = obj['accounts'],
                             accountPwdHash = accounts['accountPwdHash'],
                             pwd = accountPwdHash[account] || accounts['defaultPwd'];
@@ -219,7 +219,7 @@ var contextMenuId = chrome.contextMenus.create({
 
         if(env === '') {
             //拉了一下保存的数据
-            chrome.storage.local.get('accounts', function(obj) {
+            chrome.storage.sync.get('accounts', function(obj) {
                 var accounts = obj['accounts'],
                     accountEnvHash = accounts['accountEnvHash'];
 
@@ -247,9 +247,16 @@ chrome.storage.local.get('accounts', function(obj) {
             'defaultPwd': '',
             'accountEnvHash': {}
         };
+    } else {
+
         chrome.storage.local.set({
-            'accounts': obj
+            accounts: {}
         });
+
+        chrome.storage.sync.set({
+            accounts: obj
+        });
+
     }
 });
 // background.js当中进行监听来自contentscript 或是popup.html中的请求
@@ -283,7 +290,7 @@ chrome.runtime.onMessage.addListener(
             var account = request.account,
                 pwd = request.pwd;
 
-            chrome.storage.local.get('accounts', function(obj) {
+            chrome.storage.sync.get('accounts', function(obj) {
                 var localAccount = {};
                 if ($.isEmptyObject(obj)) {
                     obj = {
@@ -295,7 +302,7 @@ chrome.runtime.onMessage.addListener(
                         'accountEnvHash': {}
                     };
                     localAccount = obj;
-                    chrome.storage.local.set({
+                    chrome.storage.sync.set({
                         'accounts': localAccount
                     });
                 } else {
@@ -307,7 +314,7 @@ chrome.runtime.onMessage.addListener(
                 accountPwdHash[account] = pwd;
 
                 //保存至chrome.storage
-                chrome.storage.local.set({
+                chrome.storage.sync.set({
                     'accounts': localAccount
                 });
             });
