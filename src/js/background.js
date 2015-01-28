@@ -238,7 +238,8 @@ var contextMenuId = chrome.contextMenus.create({
 });
 // 获取accounts 数据，这个保存在chrome插件的storage当中, 和localStorage稍有不同，具体可见官网介绍
 chrome.storage.local.get('accounts', function(obj) {
-    if ($.isEmptyObject(obj)) {
+
+    if ($.isEmptyObject(obj) || $.isEmptyObject(obj['accounts'])) {
         obj = {
             'dev': {},
             'oa': {},
@@ -247,16 +248,23 @@ chrome.storage.local.get('accounts', function(obj) {
             'defaultPwd': '',
             'accountEnvHash': {}
         };
+        chrome.storage.sync.get('accounts', function(syncObj) {
+            if($.isEmptyObject(syncObj)) {
+                chrome.storage.sync.set({
+                    accounts: obj
+                });
+            }
+        });
+
+        chrome.storage.local.remove('accounts');
     } else {
+        // 设置为空
+        chrome.storage.local.remove('accounts');
 
-        chrome.storage.local.set({
-            accounts: {}
-        });
-
+        // 将之设置到sync上
         chrome.storage.sync.set({
-            accounts: obj
+            accounts: obj['accounts'] || { 'dev': {}, 'oa': {}, 'ol': {}, 'accountPwdHash': {}, 'defaultPwd': {}, 'accountEnvHash': {}}
         });
-
     }
 });
 // background.js当中进行监听来自contentscript 或是popup.html中的请求
@@ -292,7 +300,7 @@ chrome.runtime.onMessage.addListener(
 
             chrome.storage.sync.get('accounts', function(obj) {
                 var localAccount = {};
-                if ($.isEmptyObject(obj)) {
+                if ($.isEmptyObject(obj) || $.isEmptyObject(obj['accounts'])) {
                     obj = {
                         'dev': {},
                         'oa': {},

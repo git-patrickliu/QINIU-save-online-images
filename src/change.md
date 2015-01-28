@@ -30,3 +30,6 @@ changelog
 
 ### 0.9.4
 1. add storage sync api
+
+### 0.9.5
+1. 优化如果本地有数据，同步到sync
