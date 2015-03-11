@@ -27,6 +27,11 @@ $("#tlv-cgi-stack").delegate('a', 'click', function () {
     if (this.title) alert(this.title);
 });
 
+$('#clear').on('click', function() {
+    $('#tlv-cgi-stack').html('');
+    tlv_count = 1;
+});
+
 
 chrome.devtools.network.onRequestFinished.addListener(function (request) {
     request.getContent(function (body) {

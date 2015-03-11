@@ -39,3 +39,6 @@ changelog
 
 ### 0.9.7
 1. 将webInterfaceLog移到开发者工具当中
+
+### 0.9.8
+1. 新增clear btn
