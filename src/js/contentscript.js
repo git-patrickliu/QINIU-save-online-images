@@ -95,6 +95,7 @@ if(!env) {
                 'dev': {},
                 'oa': {},
                 'ol': {},
+                'autoInputMobileCode': true,
                 'accountPwdHash': {},
                 'defaultPwd': '',
                 'accountEnvHash': {}
@@ -145,6 +146,52 @@ if(!env) {
         }
     });
 
+    // 如果发现url是 /hrtx/verifyAdminMobile/index ， 并且是dev和oa环境
+    if((env === 'dev' || env === 'oa') && window.location.pathname === '/hrtx/verifyAdminMobile/index') {
+        // 获取用户是否开启了自动填安全码
+        chrome.storage.sync.get('accounts', function(obj) {
+            if ($.isEmptyObject(obj)) {
+                obj = {
+                    'dev': {},
+                    'oa': {},
+                    'ol': {},
+                    'autoInputMobileCode': true,
+                    'accountPwdHash': {},
+                    'defaultPwd': '',
+                    'accountEnvHash': {}
+                };
+                localAccount = obj;
+                chrome.storage.sync.set({
+                    'accounts': localAccount
+                });
+            } else {
+                localAccount = obj['accounts'];
+            }
+
+            // 兼容老代码
+            if(localAccount.autoInputMobileCode || typeof localAccount.autoInputMobileCode === 'undefined') {
+                var carr = document.cookie.match(new RegExp("(^| )_bqq_csrf=([^;]*)(;|$)")),
+                    _bqq_csrf = '';
+                if(carr !== null) {
+                    _bqq_csrf = unescape(carr[2]);
+                }
+                $.ajax({
+                    url: '/hrtx/verifyAdminMobile/verifyOldMobile',
+                    method: 'POST',
+                    dataType: 'json',
+                    data: {
+                        verifyCode: '9999',
+                        _bqq_csrf: _bqq_csrf
+                    }
+                })
+                    .done(function(res) {
+                        if(res.r == 0) {
+                            window.location.href = '/hrtx/welcome/index';
+                        }
+                    });
+            }
+        });
+    }
 }
 
 //监听contextMenu变化，选中的是数字才让弹出的contextMenu可以选中“快捷打开企业QQ账号”

@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "快捷登录企业QQ账户中心小助手",
-    "version": "0.9.5",
+    "version": "0.9.7",
     "background": {
         "scripts": ["js/jquery-1.9.1.js", "js/background.js"]
     },
@@ -18,6 +18,8 @@
         "js": ["js/jquery-1.9.1.js", "js/contentscript.js"],
         "all_frames": true
     }],
+    "devtools_page": "html/devtools.html",
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
     "icons": {
         "16": "img/eim_16.png",
         "48": "img/eim_48.png",

@@ -13,6 +13,7 @@
         .modify-pwd:hover,
         .add-comment:hover { color: #2a6496;}
         .fr { float: right;}
+        #autoInputMobileCode { margin-left: 10px; }
     </style>
 </head>
 <body>
@@ -23,6 +24,9 @@
         <li>
             <span class="help-block">项目为了方便记录，通常会给开发测试号设置统一的密码。助手中没有记录下来密码的账号都将默认以下面的密码登录。</span>
             <p><label for="defaultPwd">快速登录统一密码设置：</label><input id="defaultPwd" type="text"></p>
+        </li>
+        <li>
+            <p><label>是否自动输入手机验证码:</label><input id="autoInputMobileCode" type="checkbox"></p>
         </li>
         <li id="dev" class="">
             <div class="dev">

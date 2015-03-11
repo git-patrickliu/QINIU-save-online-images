@@ -78,6 +78,7 @@ var autoLoginHelper = {
                 ol = accounts['ol'],
                 defaultPwd = accounts['defaultPwd'],
                 accountPwdHash = accounts['accountPwdHash'],
+                autoInputMobileCode = accounts['autoInputMobileCode'],
                 $devTable = $('#devTable'),
                 $oaTable = $('#oaTable'),
                 $olTable = $('#olTable'),
@@ -85,6 +86,19 @@ var autoLoginHelper = {
 
             autoLoginHelper.accounts = accounts;
             $('#defaultPwd').val(defaultPwd);
+
+            // 兼容老代码
+            if(typeof autoInputMobileCode === 'undefined') {
+                autoInputMobileCode = true;
+            }
+
+            // 设置是否自动提交
+            if(autoInputMobileCode == true) {
+                $('#autoInputMobileCode').prop('checked', true);
+            } else {
+                $('#autoInputMobileCode').prop('checked', false);
+            }
+
 
             var genTpl = template({
                 env: 'dev',
@@ -272,6 +286,28 @@ var autoLoginHelper = {
                     $(this).trigger('blur');
                 }
             });
+
+        $('#autoInputMobileCode').change(function() {
+            var accounts = autoLoginHelper.accounts;
+
+            // 被选中了
+            if($(this).is(':checked')) {
+                if(accounts) {
+                    accounts.autoInputMobileCode = true;
+                }
+            } else {
+                // 未被选中
+                if(accounts) {
+                    accounts.autoInputMobileCode = false;
+                }
+            }
+
+            chrome.storage.sync.set({
+                accounts: autoLoginHelper.accounts
+            }, function() {
+                window.location.reload();
+            });
+        });
 
         $('#reset').click(function() {
             if(confirm('您确认要重置小助手吗？所有的数据将会被删除。')) {

@@ -244,6 +244,7 @@ chrome.storage.local.get('accounts', function(obj) {
             'dev': {},
             'oa': {},
             'ol': {},
+            'autoInputMobileCode': true,
             'accountPwdHash': {},
             'defaultPwd': '',
             'accountEnvHash': {}
@@ -305,6 +306,7 @@ chrome.runtime.onMessage.addListener(
                         'dev': {},
                         'oa': {},
                         'ol': {},
+                        'autoInputMobileCode': true,
                         'accountPwdHash': {},
                         'defaultPwd': '',
                         'accountEnvHash': {}
