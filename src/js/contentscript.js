@@ -96,6 +96,7 @@ if(!env) {
                 'oa': {},
                 'ol': {},
                 'autoInputMobileCode': true,
+                'autoHideWebInterfaceLog': false,
                 'accountPwdHash': {},
                 'defaultPwd': '',
                 'accountEnvHash': {}
@@ -109,6 +110,13 @@ if(!env) {
         }
 
         envAccount = localAccount[env];
+
+        // hide error log
+        if(localAccount.autoHideWebInterfaceLog == true) {
+            $('#tlv-cgi-err-container').hide();
+        } else {
+            $('#tlv-cgi-err-container').show();
+        }
 
         //获取页面上的号码
         var $user = $('#user'),

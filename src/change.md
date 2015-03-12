@@ -42,3 +42,6 @@ changelog
 
 ### 0.9.8
 1. 新增clear btn
+
+### 0.9.9
+1. add auto hide webInterface checkbox

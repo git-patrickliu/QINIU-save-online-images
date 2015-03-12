@@ -79,6 +79,7 @@ var autoLoginHelper = {
                 defaultPwd = accounts['defaultPwd'],
                 accountPwdHash = accounts['accountPwdHash'],
                 autoInputMobileCode = accounts['autoInputMobileCode'],
+                autoHideWebInterfaceLog = accounts['autoHideWebInterfaceLog'],
                 $devTable = $('#devTable'),
                 $oaTable = $('#oaTable'),
                 $olTable = $('#olTable'),
@@ -92,11 +93,21 @@ var autoLoginHelper = {
                 autoInputMobileCode = true;
             }
 
+            if(typeof autoHideWebInterfaceLog === 'undefined') {
+                autoHideWebInterfaceLog = false;
+            }
+
             // 设置是否自动提交
             if(autoInputMobileCode == true) {
                 $('#autoInputMobileCode').prop('checked', true);
             } else {
                 $('#autoInputMobileCode').prop('checked', false);
+            }
+
+            if(autoHideWebInterfaceLog == true) {
+                $('#autoHideWebInterfaceLog').prop('checked', true);
+            } else {
+                $('#autoHideWebInterfaceLog').prop('checked', false);
             }
 
 
@@ -299,6 +310,28 @@ var autoLoginHelper = {
                 // 未被选中
                 if(accounts) {
                     accounts.autoInputMobileCode = false;
+                }
+            }
+
+            chrome.storage.sync.set({
+                accounts: autoLoginHelper.accounts
+            }, function() {
+                window.location.reload();
+            });
+        });
+
+        $('#autoHideWebInterfaceLog ').change(function() {
+            var accounts = autoLoginHelper.accounts;
+
+            // 被选中了
+            if($(this).is(':checked')) {
+                if(accounts) {
+                    accounts.autoHideWebInterfaceLog = true;
+                }
+            } else {
+                // 未被选中
+                if(accounts) {
+                    accounts.autoHideWebInterfaceLog = false;
                 }
             }
 
