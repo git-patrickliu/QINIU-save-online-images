@@ -1,4 +1,4 @@
-EIMQQ_AUTOLOGIN_CHROME
+QINIU-save-online-images
 ======================
 
-an auto login addon for EIMQQ testers of chrome version. 
+A Chrome Extension to auto save online images.
