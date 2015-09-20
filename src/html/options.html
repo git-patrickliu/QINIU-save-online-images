@@ -1,106 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>企业QQ登录小助手--设置</title>
+    <title>七牛在线存图</title>
     <meta charset="utf-8">
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .hint { padding: 10px 15px;}
-        .dn { display: none;}
-        .green-border { border: 2px solid green;}
-        .modify-pwd,
-        .add-comment { text-decoration: underline; color: #428bca; cursor: pointer;}
-        .modify-pwd:hover,
-        .add-comment:hover { color: #2a6496;}
         .fr { float: right;}
-        #autoInputMobileCode, #autoHideWebInterfaceLog { margin-left: 10px; }
     </style>
 </head>
 <body>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">七牛在线存图</a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
 <div class="container">
-    <h3 class="page-header">企业QQ登录小助手--设置<button id="reset" class="fr btn-danger btn-sm">重置小助手</button></h3>
-    <p class="alert-warning hint">为方便快捷设置，在输入框修改完之后按回车即保存</p>
-    <ul class="account-wrapper">
-        <li>
-            <span class="help-block">项目为了方便记录，通常会给开发测试号设置统一的密码。助手中没有记录下来密码的账号都将默认以下面的密码登录。</span>
-            <p><label for="defaultPwd">快速登录统一密码设置：</label><input id="defaultPwd" type="text"></p>
-        </li>
-        <li>
-            <p><label>是否自动输入手机验证码:</label><input id="autoInputMobileCode" type="checkbox"></p>
-        </li>
-        <li>
-            <p><label>是否自动隐藏webInterface Log:</label><input id="autoHideWebInterfaceLog" type="checkbox"></p>
-        </li>
-        <li id="dev" class="">
-            <div class="dev">
-                <h4>开发号列表</h4>
-                <table id="devTable" class="table table-bordered table-hover">
-                    <thead>
-                    <tr>
-                        <th>主号</th>
-                        <th>号码</th>
-                        <th>账户名</th>
-                        <th>密码</th>
-                        <th>角色</th>
-                        <th>备注</th>
-                        <th>操作</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-        </li>
-        <li id="oa" class="">
-            <div class="oa">
-                <h4>测试号列表</h4>
-                <table id="oaTable" class="table table-bordered table-hover">
-                    <thead>
-                    <tr>
-                        <th>主号</th>
-                        <th>号码</th>
-                        <th>账户名</th>
-                        <th>密码</th>
-                        <th>角色</th>
-                        <th>备注</th>
-                        <th>操作</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-        </li>
-        <li id="ol" class="">
-            <div class="ol">
-                <h4>线上号列表</h4>
-                <table id="olTable" class="table table-bordered table-hover">
-                    <thead>
-                    <tr>
-                        <th>主号</th>
-                        <th>号码</th>
-                        <th>账户名</th>
-                        <th>密码</th>
-                        <th>角色</th>
-                        <th>备注</th>
-                        <th>操作</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-        </li>
-        <address class="fr">
-            <strong>patrickliu</strong><br>
-            <a href="mailto:patrickliu@tencent.com">patrickliu@tencent.com</a><br>
-            <span>企业QQ：2355201042</span><br>
-            <a href="http://b.qq.com">了解更多企业产品</a>
-        </address>
-    </ul>
-
+    <div class="form-group">
+            <label for="AK">AccessKey</label>
+            <input type="text" class="form-control" id="AK" placeholder="AccessKey">
+        </div>
+        <div class="form-group">
+            <label for="SK">SecretKey</label>
+            <input type="text" class="form-control" id="SK" placeholder="SecretKey">
+        </div>
+        <div class="form-group">
+            <label for="domain">域名</label>
+            <input type="text" class="form-control" id="domain" placeholder="域名">
+        </div>
+        <div class="form-group">
+            <label for="bucket">bucket</label>
+            <input type="text" class="form-control" id="bucket" placeholder="bucket">
+        </div>
+        <button type="button" class="btn btn-primary button" id="save">保存</button>
+    <address class="fr">
+        <strong>patrickliu</strong><br>
+        <a href="mailto:lewpengfeifei@gmail.com">lewpengfeifei@gmail.com</a><br>
+    </address>
 </div>
 <script src="../js/jquery-1.9.1.js"></script>
+<script src="../js/qiniuModel.js"></script>
 <script src="../js/options.js"></script>
 </body>
 </html>

@@ -1,213 +1,53 @@
-/**
- * Created with JetBrains PhpStorm.
- * User: patrickliu
- * Date: 13-12-17
- * Time: 下午2:15
- * To change this template use File | Settings | File Templates.
- */
+chrome.runtime.onMessage.addListener(function (data) {
 
-var url = window.location.href,
-    regexpDev = /^https?:\/\/devid/,
-    regexpOa = /^https?:\/\/oaid/,
-    regexOl = /^https?:\/\/id/,
-    localAccount = {},
-    env = '',
-    envAccount = {}; //default value
+    if(data && data.action === 'UPLOAD_IMG') {
 
-//判断属于哪一个 dev oa ol
-if(regexpDev.test(url)) {
-    //dev
-    env = 'dev';
+        // 在页面当中新建一个canvas来取base64值
+        var image = new Image();
+        image.src = data.srcUrl;
 
-} else if(regexpOa.test(url)){
-    //oa
-    env = 'oa';
+        image.onload = function() {
 
-} else if(regexOl.test(url)) {
-    //ol
-    env = 'ol';
-}
+            try {
 
-if(!env) {
-    //可能是pt框
-    var $loginButton = $('#login_button'),
-        $u = $('#u'),
-        $p = $('#p');
+                // 通过canvas来获取base64的值
+                var canvas = document.createElement('canvas');
+                canvas.height = image.height;
+                canvas.width = image.width;
 
-    //绑定#login_button的点击事件
-    $loginButton.click(function() {
-        //点击之后将用户名和密码传给background.js用于保存
-        var uValue = $.trim($u.val()),
-            pValue = $.trim($p.val());
+                var ctx = canvas.getContext('2d');
+                ctx.drawImage(image, 0, 0);
 
-        if(uValue !== '' && pValue !== '') {
-            chrome.runtime.sendMessage({
-                from: 'pt',
-                account: uValue,
-                pwd: pValue
-            });
-        }
-    });
+                var base64 = canvas.toDataURL();
 
-    //pt框来监听数据到来
-    chrome.runtime.onMessage.addListener(function(data) {
-        if(data) {
-            var account = data.account,
-                pwd = data.pwd;
-
-            // 下面代码为啥要这样写呢？因为pt登陆框在输入账号之后，input框blur之后实现上会发送一个
-            // 请求去后台来判断一些是否要输入验证码的逻辑，并会种下一些比较重要的cookie,
-            // 所以这里setTimeout了 100秒 和 1000秒来模拟手动的行为
-                $u.val(account);
-                $u[0].focus();
-                setTimeout(function() {
-                    $p[0].focus();
-                    $p.val(pwd);
-                    setTimeout(function() {
-                        $loginButton.click();
-                    }, 1000);
-                }, 100);
-        }
-    });
-} else {
-    //判断url中是否有accout和pwd的字段, 隐藏的一种快捷登陆方式，通过url#account=xxxxx&pwd=xxxxx
-    //小彩蛋一个
-    var existAccountAndPwd = '#.*account=([^&]*)&pwd=([^&]*)',
-        matchedAccountAndPwd = url.match(existAccountAndPwd),
-        userAccount = '',
-        userPwd = '';
-
-    if(matchedAccountAndPwd && matchedAccountAndPwd.length > 2) {
-        userAccount = matchedAccountAndPwd[1];
-        userPwd = matchedAccountAndPwd[2];
-        chrome.runtime.sendMessage({
-            account: userAccount,
-            pwd: userPwd
-        }, function(res) {
-        });
-    }
-
-    //账户中心页面
-    //从chrome localstorage 来获取数据
-    chrome.storage.sync.get('accounts', function(obj) {
-        if ($.isEmptyObject(obj)) {
-            obj = {
-                'dev': {},
-                'oa': {},
-                'ol': {},
-                'autoInputMobileCode': true,
-                'autoHideWebInterfaceLog': false,
-                'accountPwdHash': {},
-                'defaultPwd': '',
-                'accountEnvHash': {}
-            };
-            localAccount = obj;
-            chrome.storage.sync.set({
-                'accounts': localAccount
-            });
-        } else {
-            localAccount = obj['accounts'];
-        }
-
-        envAccount = localAccount[env];
-
-        // hide error log
-        if(localAccount.autoHideWebInterfaceLog == true) {
-            $('#tlv-cgi-err-container').hide();
-        } else {
-            $('#tlv-cgi-err-container').show();
-        }
-
-        //获取页面上的号码
-        var $user = $('#user'),
-            mainAccount = $user.attr('account'),
-            crtAccountRegexp = /\((\d*)\)$/,
-            crtAccountText = $user.text().slice(4),
-            crtAccountArray = crtAccountText.match(crtAccountRegexp),
-            crtAccount = '',
-            isAdmin = window.location.href.indexOf('adminIndex') !== -1;
-
-        if(crtAccountArray && crtAccountArray.length > 1) {
-            crtAccount = crtAccountArray[1];
-        }
-
-        if(crtAccount) {
-            if(!envAccount[mainAccount]) {
-                envAccount[mainAccount] = {};
-            }
-
-            // {mainAccount: '', name: '', comment: ''}
-            if(!envAccount[mainAccount][crtAccount]) {
-                envAccount[mainAccount][crtAccount] = {
-                    'mainAccount': mainAccount,
-                    'name': crtAccountText,
-                    'role': mainAccount === crtAccount ? '主号' : (isAdmin === true ? '管理员' : '')
-                };
-            } else {
-                envAccount[mainAccount][crtAccount]['mainAccount'] = mainAccount;
-                envAccount[mainAccount][crtAccount]['name'] = crtAccountText;
-            }
-
-            //设置账号的环境
-            localAccount['accountEnvHash'][crtAccount] = env;
-            chrome.storage.sync.set({'accounts': localAccount});
-        }
-    });
-
-    // 如果发现url是 /hrtx/verifyAdminMobile/index ， 并且是dev和oa环境
-    if((env === 'dev' || env === 'oa') && window.location.pathname === '/hrtx/verifyAdminMobile/index') {
-        // 获取用户是否开启了自动填安全码
-        chrome.storage.sync.get('accounts', function(obj) {
-            if ($.isEmptyObject(obj)) {
-                obj = {
-                    'dev': {},
-                    'oa': {},
-                    'ol': {},
-                    'autoInputMobileCode': true,
-                    'accountPwdHash': {},
-                    'defaultPwd': '',
-                    'accountEnvHash': {}
-                };
-                localAccount = obj;
-                chrome.storage.sync.set({
-                    'accounts': localAccount
+                // 将此值发送给background.js
+                chrome.runtime.sendMessage({
+                    srcUrl: data.srcUrl,
+                    base64: base64,
+                    action: 'UPLOAD_BY_BASE64'
                 });
-            } else {
-                localAccount = obj['accounts'];
+
+            } catch(e) {
+
+                // 使用url方式进行传递
+                // action: 'UPLOAD_BY_URL'
+                // 将此值发送给background.js
+                chrome.runtime.sendMessage({
+                    srcUrl: data.srcUrl,
+                    action: 'UPLOAD_BY_URL'
+                });
             }
 
-            // 兼容老代码
-            if(localAccount.autoInputMobileCode || typeof localAccount.autoInputMobileCode === 'undefined') {
-                var carr = document.cookie.match(new RegExp("(^| )_bqq_csrf=([^;]*)(;|$)")),
-                    _bqq_csrf = '';
-                if(carr !== null) {
-                    _bqq_csrf = unescape(carr[2]);
-                }
-                $.ajax({
-                    url: '/hrtx/verifyAdminMobile/verifyOldMobile',
-                    method: 'POST',
-                    dataType: 'json',
-                    data: {
-                        verifyCode: '9999',
-                        _bqq_csrf: _bqq_csrf
-                    }
-                })
-                    .done(function(res) {
-                        if(res.r == 0) {
-                            window.location.href = '/hrtx/welcome/index';
-                        }
-                    });
-            }
+        }
+    } else if(data && data.action === 'UPLOAD_FILE') {
+
+        chrome.runtime.sendMessage({
+            srcUrl: data.srcUrl,
+            action: 'UPLOAD_BY_URL'
         });
-    }
-}
 
-//监听contextMenu变化，选中的是数字才让弹出的contextMenu可以选中“快捷打开企业QQ账号”
-document.addEventListener('selectionchange', function() {
-    var selection = window.getSelection().toString().trim();
-    chrome.runtime.sendMessage({
-        from: 'selectionChange',
-        selection: selection
-    });
+    } else if(data && data.action === 'SHOW_MSG') {
+        alert(data.msg);
+    }
 });
 
