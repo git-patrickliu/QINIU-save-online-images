@@ -121,3 +121,8 @@ chrome.runtime.onMessage.addListener(function(data, messageSender) {
         }
     }
 });
+
+ // 绑定browserAction的点击事件
+chrome.browserAction.onClicked.addListener(function() {
+    chrome.tabs.create({ url: chrome.extension.getURL('html/options.html') });
+});
