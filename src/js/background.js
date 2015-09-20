@@ -126,3 +126,8 @@ chrome.runtime.onMessage.addListener(function(data, messageSender) {
 chrome.browserAction.onClicked.addListener(function() {
     chrome.tabs.create({ url: chrome.extension.getURL('html/options.html') });
 });
+
+ // after install, we open the options page
+chrome.runtime.onInstalled.addListener(function () {
+    chrome.tabs.create({ url: chrome.extension.getURL('html/options.html') });
+});
