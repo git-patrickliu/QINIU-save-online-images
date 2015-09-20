@@ -31,7 +31,9 @@ var qiniuController = {
                 xhr.setRequestHeader("Authorization", 'UpToken ' + data.token);
 
                 // 需要将前缀去掉
-                xhr.send(data.base64.slice(22));
+                var startIndex = data.base64.indexOf('base64,');
+                // 'base64,'.length === 7
+                xhr.send(data.base64.slice(startIndex + 7));
 
             }, function() {
 
