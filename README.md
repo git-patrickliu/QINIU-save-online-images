@@ -1,6 +1,8 @@
 QINIU-save-online-images
 ======================
 
+这是一个chrome的扩展工具，[【点我下载】](https://chrome.google.com/webstore/detail/%E4%B8%83%E7%89%9B%E5%9C%A8%E7%BA%BF%E5%AD%98%E5%9B%BE/ojgilmgaopbpimndoelnhacamaabdpni)。
+
 ## 用法
 七牛在线存图到底有什么功能呢？看看以下操作示意图就知晓了。
 
