@@ -68,8 +68,8 @@ chrome.runtime.onMessage.addListener(function(data, messageSender) {
                 qiniuController.getSetting().then(function(userData) {
 
                     chrome.tabs.sendMessage(tab.id, {
-                        action: 'SHOW_MSG',
-                        msg: userData.domain + '/' + userData.bucket + '/' + callbackData.key
+                        action: 'OPEN_PAGE',
+                        pageUrl: userData.domain + '/' + callbackData.key
                     });
 
                 });
@@ -109,8 +109,8 @@ chrome.runtime.onMessage.addListener(function(data, messageSender) {
                 qiniuController.getSetting().then(function(userData) {
 
                     chrome.tabs.sendMessage(tab.id, {
-                        action: 'SHOW_MSG',
-                        msg: '地址:  ' + userData.domain + '/' + callbackData.key
+                        action: 'OPEN_PAGE',
+                        pageUrl: userData.domain + '/' + callbackData.key
                     });
 
                 });

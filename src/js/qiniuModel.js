@@ -10,12 +10,6 @@ var qiniuModel = {
 
             chrome.storage.local.get('QINIU', function(data) {
 
-                /*
-                data.accessKey = 'ikWQlWSW7vEUhN4BNxO1kqy5i0-kQVOYtJerhnDh';
-                data.secretKey = 'Vx1ANQH-3F1kTcLP88NHxObcg1ujkimEvsnFKnzY';
-                data.domain = 'http://7xkybo.com1.z0.glb.clouddn.com/';
-                data.bucket = 'download';
-                */
                 if(data) {
 
                     var QINIU = data['QINIU'];

@@ -47,7 +47,11 @@ chrome.runtime.onMessage.addListener(function (data) {
         });
 
     } else if(data && data.action === 'SHOW_MSG') {
+
         alert(data.msg);
+
+    } else if(data && data.action === 'OPEN_PAGE') {
+        window.open(data.pageUrl);
     }
 });
 
