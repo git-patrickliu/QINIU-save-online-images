@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "七牛在线存图",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "background": {
         "scripts": [
           "js/jquery-1.9.1.js",
@@ -13,7 +13,9 @@
     },
     "content_scripts": [{
         "matches": ["http://*/*", "https://*/*"],
-        "js": ["js/jquery-1.9.1.js", "js/contentscript.js"]
+        "js": ["js/contentscript.js"],
+        "run_at": "document_start",
+        "all_frames": true
     }],
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
     "icons": {

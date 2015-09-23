@@ -15,3 +15,8 @@ changelog
 0.0.4
 1. manifest.json, no all_frames.
 
+--------
+0.0.5
+1. fix tabs.sendMessage && runtime.sendMessage bugs or wrong useage.
+
+

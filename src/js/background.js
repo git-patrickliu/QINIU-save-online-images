@@ -21,29 +21,39 @@
 
                 chrome.tabs.sendMessage(tab.id, {
                     action: 'UPLOAD_IMG',
+                    tabId: tab.id,
                     srcUrl: info.srcUrl
+                }, {
+                    frameId: 0
                 });
             } else if(info.linkUrl) {
 
                 //href方式
                 chrome.tabs.sendMessage(tab.id, {
                     action: 'UPLOAD_FILE',
+                    tabId: tab.id,
                     srcUrl: info.linkUrl
+                }, {
+                    frameId: 0
                 });
 
             }
 
         }, function() {
 
+
             chrome.tabs.sendMessage(tab.id, {
                 action: 'SHOW_MSG',
+                tabId: tab.id,
                 msg: '未设置七牛相关设置，请点击七牛在线存图ICON前往设置'
+            }, {
+                frameId: 0
             });
         });
     }
 });
 
-chrome.runtime.onMessage.addListener(function(data, messageSender) {
+chrome.runtime.onMessage.addListener(function(data, messageSender, response) {
     // 将此值上传到七牛bucket当中
     // 通过BASE64方式传递
 
@@ -51,7 +61,9 @@ chrome.runtime.onMessage.addListener(function(data, messageSender) {
 
     if(data) {
 
+
         if(data.action === 'UPLOAD_BY_BASE64') {
+
 
             var REGEXP_EXT = /^data:image\/([^;]*)/,
                 matched = data.base64.match(REGEXP_EXT);
@@ -67,18 +79,23 @@ chrome.runtime.onMessage.addListener(function(data, messageSender) {
 
                 qiniuController.getSetting().then(function(userData) {
 
-                    chrome.tabs.sendMessage(tab.id, {
+
+
+                    response({
                         action: 'OPEN_PAGE',
+                        tabId: tab.id,
                         pageUrl: userData.domain + '/' + callbackData.key
                     });
-
                 });
 
 
 
             }, function() {
-                console.log('failed');
+
+                 console.log('failed');
             });
+
+            return true;
 
 
         } else if(data.action === 'UPLOAD_BY_URL') {
@@ -108,16 +125,25 @@ chrome.runtime.onMessage.addListener(function(data, messageSender) {
 
                 qiniuController.getSetting().then(function(userData) {
 
-                    chrome.tabs.sendMessage(tab.id, {
+
+
+                    response({
                         action: 'OPEN_PAGE',
+                        tabId: tab.id,
                         pageUrl: userData.domain + '/' + callbackData.key
                     });
-
                 });
 
             }, function() {
 
             });
+
+            return true;
+
+        } else if(data.action === 'CONSOLE') {
+
+            // console.log('get msg from ' + tab.id);
+
         }
     }
 });

@@ -1,6 +1,15 @@
 chrome.runtime.onMessage.addListener(function (data) {
 
+    // 向background上报一下，收到了消息
+    chrome.runtime.sendMessage({
+        msg: 'it is me',
+        action: 'CONSOLE'
+    });
+
     if(data && data.action === 'UPLOAD_IMG') {
+
+        console.log('UPLOAD_IMG');
+
 
         // 在页面当中新建一个canvas来取base64值
         var image = new Image();
@@ -25,7 +34,7 @@ chrome.runtime.onMessage.addListener(function (data) {
                     srcUrl: data.srcUrl,
                     base64: base64,
                     action: 'UPLOAD_BY_BASE64'
-                });
+                }, responseHandler);
 
             } catch(e) {
 
@@ -35,23 +44,34 @@ chrome.runtime.onMessage.addListener(function (data) {
                 chrome.runtime.sendMessage({
                     srcUrl: data.srcUrl,
                     action: 'UPLOAD_BY_URL'
-                });
+                }, responseHandler);
             }
 
         }
     } else if(data && data.action === 'UPLOAD_FILE') {
 
+
+        console.log('UPLOAD_FILE');
+
         chrome.runtime.sendMessage({
             srcUrl: data.srcUrl,
             action: 'UPLOAD_BY_URL'
-        });
+        }, responseHandler);
 
     } else if(data && data.action === 'SHOW_MSG') {
 
         alert(data.msg);
-
-    } else if(data && data.action === 'OPEN_PAGE') {
-        window.open(data.pageUrl);
     }
 });
 
+function responseHandler(response) {
+
+    if(response) {
+
+        if(response.action === 'SHOW_MSG') {
+            alert(response.msg);
+        } else if(response.action === 'OPEN_PAGE') {
+            window.open(response.pageUrl);
+        }
+    }
+}

@@ -21,6 +21,7 @@ var qiniuController = {
                 xhr.onreadystatechange = function () {
 
                     if (xhr.readyState === 4 && xhr.status === 200) {
+
                         resolve(JSON.parse(xhr.responseText));
                     } else if(xhr.readyState === 4 && typeof xhr.status !== 'undefined' && xhr.status !== 200) {
                         reject(null);
