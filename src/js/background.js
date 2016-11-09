@@ -57,7 +57,7 @@ chrome.runtime.onMessage.addListener(function(data, messageSender, response) {
     // 将此值上传到七牛bucket当中
     // 通过BASE64方式传递
 
-    var tab = messageSender.tab;
+    var tab = messageSender.tab || {};
 
     if(data) {
 
