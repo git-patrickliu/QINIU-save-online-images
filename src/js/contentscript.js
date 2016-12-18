@@ -32,6 +32,7 @@ chrome.runtime.onMessage.addListener(function (data) {
                 // 将此值发送给background.js
                 chrome.runtime.sendMessage({
                     srcUrl: data.srcUrl,
+                    dir: data.dir,
                     base64: base64,
                     action: 'UPLOAD_BY_BASE64'
                 }, responseHandler);
@@ -43,6 +44,7 @@ chrome.runtime.onMessage.addListener(function (data) {
                 // 将此值发送给background.js
                 chrome.runtime.sendMessage({
                     srcUrl: data.srcUrl,
+                    dir: data.dir,
                     action: 'UPLOAD_BY_URL'
                 }, responseHandler);
             }
@@ -55,6 +57,7 @@ chrome.runtime.onMessage.addListener(function (data) {
 
         chrome.runtime.sendMessage({
             srcUrl: data.srcUrl,
+            dir: data.dir,
             action: 'UPLOAD_BY_URL'
         }, responseHandler);
 

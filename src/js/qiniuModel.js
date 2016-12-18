@@ -37,6 +37,17 @@ var qiniuModel = {
     setSetting: function(data) {
 
         return new Promise(function(resolve, reject) {
+            
+            var directories = data.directories;
+            if(directories) {
+                
+                data.defaultDir = directories.split(',')[0];
+                data.allDirs = directories.split(',');
+            } else {
+                // 根据directories来设置defaultDir
+                data.defaultDir = '';
+                data.allDirs = [''];
+            }
 
             chrome.storage.local.set({
                 QINIU: data
@@ -53,17 +64,17 @@ var qiniuModel = {
 
         var genUpToken = function(accessKey, secretKey, putPolicy) {
 
-                //SETP 2
+                //STEP 2
                 var put_policy = JSON.stringify(putPolicy);
 
-                //SETP 3
+                //STEP 3
                 var encoded = base64encode(utf16to8(put_policy));
 
-                //SETP 4
+                //STEP 4
                 var hash = CryptoJS.HmacSHA1(encoded, secretKey);
                 var encoded_signed = hash.toString(CryptoJS.enc.Base64);
 
-                //SETP 5
+                //STEP 5
                 var upload_token = accessKey + ":" + safe64(encoded_signed) + ":" + encoded;
 
                 return upload_token;

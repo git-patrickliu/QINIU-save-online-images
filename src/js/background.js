@@ -1,57 +1,136 @@
- var contextMenuId = chrome.contextMenus.create({
+var initContextMenus = function() {
+    
+    chrome.contextMenus.removeAll();
 
-    type: 'normal',
+    var parentContextMenuId = chrome.contextMenus.create({
 
-    title: '存入七牛云存储',
+        type: 'normal',
 
-    // contexts有很多种，
-    // "all", "page", "frame", "selection", "link", "editable", "image", "video", "audio", "launcher", "browser_action", or "page_action"
-    // 我们选用的是image
-    // 只在图片上面有action
-    contexts: ['image', 'link'],
-    onclick: function(info, tab) {
-        // 获取图片url,
-        // 然后推送到七牛
-        // 将info.srcUrl推送给contentscript
-        // 如果没有设置七牛的相关项，则不推送
-        qiniuController.getSetting().then(function() {
+        title: '存入七牛云存储',
 
-            // src路径方式
-            if(info.srcUrl) {
+        // contexts有很多种，
+        // "all", "page", "frame", "selection", "link", "editable", "image", "video", "audio", "launcher", "browser_action", or "page_action"
+        // 我们选用的是image
+        // 只在图片上面有action
+        contexts: ['image', 'link'],
+        onclick: function(info, tab) {
+            // 获取图片url,
+            // 然后推送到七牛
+            // 将info.srcUrl推送给contentscript
+            // 如果没有设置七牛的相关项，则不推送
+            qiniuController.getSetting().then(function(QINIU) {
+
+                // src路径方式
+                if(info.srcUrl) {
+
+                    chrome.tabs.sendMessage(tab.id, {
+                        action: 'UPLOAD_IMG',
+                        tabId: tab.id,
+                        dir: QINIU.defaultDir,
+                        srcUrl: info.srcUrl
+                    }, {
+                        frameId: 0
+                    });
+                } else if(info.linkUrl) {
+
+                    //href方式
+                    chrome.tabs.sendMessage(tab.id, {
+                        action: 'UPLOAD_FILE',
+                        tabId: tab.id,
+                        dir: QINIU.defaultDir,
+                        srcUrl: info.linkUrl
+                    }, {
+                        frameId: 0
+                    });
+
+                }
+
+            }, function() {
+
 
                 chrome.tabs.sendMessage(tab.id, {
-                    action: 'UPLOAD_IMG',
+                    action: 'SHOW_MSG',
                     tabId: tab.id,
-                    srcUrl: info.srcUrl
+                    msg: '未设置七牛相关设置，请点击七牛在线存图ICON前往设置'
                 }, {
                     frameId: 0
                 });
-            } else if(info.linkUrl) {
+            });
+        }
+    });
 
-                //href方式
-                chrome.tabs.sendMessage(tab.id, {
-                    action: 'UPLOAD_FILE',
-                    tabId: tab.id,
-                    srcUrl: info.linkUrl
-                }, {
-                    frameId: 0
+    qiniuController.getSetting().then(function(QINIU) {
+        if(QINIU && QINIU.allDirs && QINIU.allDirs.length > 1) {
+
+            var allDirs = QINIU.allDirs;
+            for(var i = 0, len = allDirs.length; i < len; i++) {
+
+                var singleDir = allDirs[i] || '根目录';
+                var subContextMenuId = chrome.contextMenus.create({
+
+                    id: singleDir + '_' + (+ new Date()),
+
+                    type: 'normal',
+
+                    title: singleDir,
+
+                    // contexts有很多种，
+                    // "all", "page", "frame", "selection", "link", "editable", "image", "video", "audio", "launcher", "browser_action", or "page_action"
+                    // 我们选用的是image
+                    // 只在图片上面有action
+                    parentId: parentContextMenuId,
+                    contexts: ['all'],
+                    onclick: function(info, tab) {
+                        // 获取图片url,
+                        // 然后推送到七牛
+                        // 将info.srcUrl推送给contentscript
+                        // 如果没有设置七牛的相关项，则不推送
+                        qiniuController.getSetting().then(function(QINIU) {
+
+                            // src路径方式
+                            if(info.srcUrl) {
+
+                                chrome.tabs.sendMessage(tab.id, {
+                                    action: 'UPLOAD_IMG',
+                                    tabId: tab.id,
+                                    dir: info.menuItemId.split('_')[0],
+                                    srcUrl: info.srcUrl
+                                }, {
+                                    frameId: 0
+                                });
+                            } else if(info.linkUrl) {
+
+                                //href方式
+                                chrome.tabs.sendMessage(tab.id, {
+                                    action: 'UPLOAD_FILE',
+                                    tabId: tab.id,
+                                    dir: info.menuItemId.split('_')[0],
+                                    srcUrl: info.linkUrl
+                                }, {
+                                    frameId: 0
+                                });
+
+                            }
+
+                        }, function() {
+
+
+                            chrome.tabs.sendMessage(tab.id, {
+                                action: 'SHOW_MSG',
+                                tabId: tab.id,
+                                msg: '未设置七牛相关设置，请点击七牛在线存图ICON前往设置'
+                            }, {
+                                frameId: 0
+                            });
+                        });
+                    }
                 });
-
             }
 
-        }, function() {
-
-
-            chrome.tabs.sendMessage(tab.id, {
-                action: 'SHOW_MSG',
-                tabId: tab.id,
-                msg: '未设置七牛相关设置，请点击七牛在线存图ICON前往设置'
-            }, {
-                frameId: 0
-            });
-        });
-    }
-});
+        }
+    });
+};
+initContextMenus(); 
 
 chrome.runtime.onMessage.addListener(function(data, messageSender, response) {
     // 将此值上传到七牛bucket当中
@@ -62,89 +141,89 @@ chrome.runtime.onMessage.addListener(function(data, messageSender, response) {
     if(data) {
 
 
-        if(data.action === 'UPLOAD_BY_BASE64') {
+        qiniuController.getSetting().then(function(QINIU) {
 
-
-            var REGEXP_EXT = /^data:image\/([^;]*)/,
-                matched = data.base64.match(REGEXP_EXT);
-
-            var ext = '';
-
-            if(matched && matched.length > 1) {
-                ext = matched[1];
-                data.fileName = CryptoJS.MD5(data.srcUrl) + '.' + ext;
+            // 如果没有填,则给默认的
+            if(typeof data.dir === 'undefined') {
+                data.dir = QINIU.defaultDir;
             }
 
-            qiniuController.uploadByBase64(data).then(function(callbackData) {
-
-                qiniuController.getSetting().then(function(userData) {
+            if(data.action === 'UPLOAD_BY_BASE64') {
 
 
-
-                    response({
-                        action: 'OPEN_PAGE',
-                        tabId: tab.id,
-                        pageUrl: userData.domain + '/' + callbackData.key
-                    });
-                });
-
-
-
-            }, function() {
-
-                 console.log('failed');
-            });
-
-            return true;
-
-
-        } else if(data.action === 'UPLOAD_BY_URL') {
-
-
-            try {
+                var REGEXP_EXT = /^data:image\/([^;]*)/,
+                    matched = data.base64.match(REGEXP_EXT);
 
                 var ext = '';
 
-                // 从url当中获取ext
-                var extFrament = data.srcUrl.split('.')[data.srcUrl.split('.').length - 1];
-                var REGEXP_EXT = /^([^\/\\\?]*)/,
-                    matched = extFrament.match(REGEXP_EXT);
-
-
                 if(matched && matched.length > 1) {
                     ext = matched[1];
-                    data.fileName = CryptoJS.MD5(data.srcUrl) + '.' + ext;
+                    data.fileName = (data.dir ? (data.dir + '/') : '') + CryptoJS.MD5(data.srcUrl) + '.' + ext;
                 }
 
-            } catch(e) {
+                qiniuController.uploadByBase64(data).then(function(callbackData) {
 
-            }
+                        response({
+                            action: 'OPEN_PAGE',
+                            tabId: tab.id,
+                            pageUrl: QINIU.domain + '/' + data.fileName
+                        });
 
-            // 通过URL方式传递
-            qiniuController.uploadByUrl(data).then(function(callbackData) {
+                }, function() {
 
-                qiniuController.getSetting().then(function(userData) {
+                    console.log('failed');
+                });
+
+                return true;
 
 
+            } else if(data.action === 'UPLOAD_BY_URL') {
+
+
+                try {
+
+                    var ext = '';
+
+                    // 从url当中获取ext
+                    var extFrament = data.srcUrl.split('.')[data.srcUrl.split('.').length - 1];
+                    var REGEXP_EXT = /^([^\/\\\?]*)/,
+                        matched = extFrament.match(REGEXP_EXT);
+
+
+                    if(matched && matched.length > 1) {
+                        ext = matched[1];
+                        data.fileName = (data.dir ? (data.dir + '/') : '') + CryptoJS.MD5(data.srcUrl) + '.' + ext;
+                    }
+
+                } catch(e) {
+
+                }
+
+                // 通过URL方式传递
+                qiniuController.uploadByUrl(data).then(function(callbackData) {
 
                     response({
                         action: 'OPEN_PAGE',
                         tabId: tab.id,
-                        pageUrl: userData.domain + '/' + callbackData.key
+                        pageUrl: QINIU.domain + '/' + data.fileName
                     });
+
+                }, function() {
+
                 });
 
-            }, function() {
+                return true;
 
-            });
+            } else if(data.action === 'CONSOLE') {
 
-            return true;
+                // console.log('get msg from ' + tab.id);
 
-        } else if(data.action === 'CONSOLE') {
-
-            // console.log('get msg from ' + tab.id);
-
-        }
+            } else if(data.action === 'REFRESH_CONTEXT_MENUS') {
+                // 
+                initContextMenus();
+            }
+        });
+        return true;
     }
 });
 
