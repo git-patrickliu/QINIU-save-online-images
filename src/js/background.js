@@ -185,15 +185,16 @@ chrome.runtime.onMessage.addListener(function(data, messageSender, response) {
                     var ext = '';
 
                     // 从url当中获取ext
-                    var extFrament = data.srcUrl.split('.')[data.srcUrl.split('.').length - 1];
-                    var REGEXP_EXT = /^([^\/\\\?]*)/,
-                        matched = extFrament.match(REGEXP_EXT);
-
+                    var REGEXP_EXT = /\.(jpeg|jpg|png|bmp|gif)/i,
+                        matched = data.srcUrl.match(REGEXP_EXT);
 
                     if(matched && matched.length > 1) {
                         ext = matched[1];
-                        data.fileName = (data.dir ? (data.dir + '/') : '') + CryptoJS.MD5(data.srcUrl) + '.' + ext;
+                    } else {
+                        ext = 'jpeg';
                     }
+
+                    data.fileName = (data.dir ? (data.dir + '/') : '') + CryptoJS.MD5(data.srcUrl) + '.' + ext;
 
                 } catch(e) {
 

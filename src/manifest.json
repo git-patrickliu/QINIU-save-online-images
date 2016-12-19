@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "七牛在线存图",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "background": {
         "scripts": [
           "js/jquery-1.9.1.js",
