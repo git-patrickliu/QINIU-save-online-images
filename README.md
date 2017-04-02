@@ -12,7 +12,9 @@ QINIU-save-online-images
 ![七牛在线存图设置](http://7xkybo.com1.z0.glb.clouddn.com/qiniu-intro1.png)
 4. 设置完毕之后，你就可以直接在线存图了。看到心宜的图千万不要放过。
 ![在线存图操作](http://7xkybo.com1.z0.glb.clouddn.com/qiniu-intro.png)
-5. 存图成功之后，就会弹出如下框。
- ![存图成功](http://7xkybo.com1.z0.glb.clouddn.com/qiniu-intro2.png)
+5. 存图成功之后，浏览器会新开一个tab, 打开对应七牛的存图url, 我们就可以直接从地址输入栏复制了。
+6. **新增杀手级功能**, 点击在chrome扩展区域的"存"的ICON, 会展示出:
+![ctrl+v上传](http://onlineimages.dapenggaofei.com/59201c291ee04cfa4a93d32c6f7afe06.png)
+这一下就NB了,你可以直接用QQ等工具截图或者直接ctrl+c复制本地的一张图片,然后在这块区域中ctrl+v, 就可以直接上传七牛. 存图更加方便了.
 
 如果是本地上传文件到七牛，推荐这个chrome扩展，[【点击前往】](https://chrome.google.com/webstore/detail/qiniu-upload-files/emmfkgdgapbjphdolealbojmcmnphdcc)。
