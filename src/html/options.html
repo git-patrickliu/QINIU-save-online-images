@@ -1,60 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>七牛在线存图</title>
-    <meta charset="utf-8">
-    <link href="../css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .fr { float: right;}
-    </style>
+  <meta charset="utf-8">
+  <title>七牛在线存图</title>
 </head>
+
 <body>
-<nav class="navbar navbar-default">
-    <div class="container-fluid">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">七牛在线存图</a>
-        </div>
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        </div><!-- /.navbar-collapse -->
-    </div><!-- /.container-fluid -->
-</nav>
-<div class="container">
-    <div class="form-group">
-            <label for="AK">AccessKey</label>
-            <input type="text" class="form-control" id="AK" placeholder="AccessKey">
-        </div>
-        <div class="form-group">
-            <label for="SK">SecretKey</label>
-            <input type="text" class="form-control" id="SK" placeholder="SecretKey">
-        </div>
-        <div class="form-group">
-            <label for="domain">域名</label>
-            <input type="text" class="form-control" id="domain" placeholder="域名">
-        </div>
-        <div class="form-group">
-            <label for="bucket">bucket</label>
-            <input type="text" class="form-control" id="bucket" placeholder="bucket">
-        </div>
-        <div class="form-group">
-            <label for="bucket">子文件夹列表</label>
-            <input type="text" class="form-control" id="directories" placeholder="非必填项, 如果只想传七牛bucket根目录不需要填此项. 如需要填,请以逗号分隔. 第一个为默认项,如需要传根目录,a/b, c目录,请填写=> ,a/b,c">
-        </div>
-        <button type="button" class="btn btn-primary button" id="save">保存</button>
-    <address class="fr">
-        <strong>patrickliu</strong><br>
-        <a href="https://github.com/git-patrickliu/QINIU-save-online-images/issues" target="_blank">feedback</a><br>
-    </address>
-</div>
-<script src="../js/jquery-1.9.1.js"></script>
-<script src="../js/qiniuModel.js"></script>
-<script src="../js/options.js"></script>
-</body>
+  <div id="app"></div>
+<script type="text/javascript" src="../js/qiniuModel.js"></script>
+<script type="text/javascript" src="../js/options/manifest.js?b1b01c6151bb7d8520ac"></script>
+<script type="text/javascript" src="../js/options/vendor.js?276830452e66886d49d6"></script>
+<script type="text/javascript" src="../js/options/index.js?5ce5247bf78cbf974c64"></script></body>
+
 </html>

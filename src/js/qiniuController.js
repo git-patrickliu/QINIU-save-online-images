@@ -83,6 +83,20 @@ var qiniuController = {
         return qiniuModel.getSetting();
     },
 
+    setSetting: function (data) {
+        var that = this;
+        return qiniuModel.setSetting(data)
+            .then(function () {
+                chrome.runtime.sendMessage({
+                    action: 'REFRESH_CONTEXT_MENUS'
+                });
+            });
+    },
+
+    getDefaultSetting: function() {
+        return qiniuModel.getDefaultSetting();
+    },
+
     // getUpToken from qiniu
     getUpToken: function(data) {
         return qiniuModel.getUpToken(data);

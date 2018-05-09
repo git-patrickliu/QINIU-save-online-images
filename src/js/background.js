@@ -1,5 +1,5 @@
 var initContextMenus = function() {
-    
+
     chrome.contextMenus.removeAll();
 
     var parentContextMenuId = chrome.contextMenus.create({
@@ -18,7 +18,7 @@ var initContextMenus = function() {
             // 然后推送到七牛
             // 将info.srcUrl推送给contentscript
             // 如果没有设置七牛的相关项，则不推送
-            qiniuController.getSetting().then(function(QINIU) {
+            qiniuController.getDefaultSetting().then(function(QINIU) {
 
                 // src路径方式
                 if(info.srcUrl) {
@@ -59,7 +59,7 @@ var initContextMenus = function() {
         }
     });
 
-    qiniuController.getSetting().then(function(QINIU) {
+    qiniuController.getDefaultSetting().then(function(QINIU) {
         if(QINIU && QINIU.allDirs && QINIU.allDirs.length > 1) {
 
             var allDirs = QINIU.allDirs;
@@ -85,7 +85,9 @@ var initContextMenus = function() {
                         // 然后推送到七牛
                         // 将info.srcUrl推送给contentscript
                         // 如果没有设置七牛的相关项，则不推送
-                        qiniuController.getSetting().then(function(QINIU) {
+                        qiniuController.getDefaultSetting().then(function(QINIU) {
+
+                            var dir = info.menuItemId.split('_')[0];
 
                             // src路径方式
                             if(info.srcUrl) {
@@ -93,7 +95,7 @@ var initContextMenus = function() {
                                 chrome.tabs.sendMessage(tab.id, {
                                     action: 'UPLOAD_IMG',
                                     tabId: tab.id,
-                                    dir: info.menuItemId.split('_')[0],
+                                    dir: dir === '根目录' ? '': dir,
                                     srcUrl: info.srcUrl
                                 }, {
                                     frameId: 0
@@ -104,7 +106,7 @@ var initContextMenus = function() {
                                 chrome.tabs.sendMessage(tab.id, {
                                     action: 'UPLOAD_FILE',
                                     tabId: tab.id,
-                                    dir: info.menuItemId.split('_')[0],
+                                    dir: dir === '根目录' ? '' : dir,
                                     srcUrl: info.linkUrl
                                 }, {
                                     frameId: 0
@@ -130,7 +132,18 @@ var initContextMenus = function() {
         }
     });
 };
-initContextMenus(); 
+
+chrome.runtime.onInstalled.addListener(function (details) {
+    if(details.reason === 'install') {
+        // new install do nothing
+    } else {
+        // 如果是update, 则需要读一下有没有QINIU这个存的值，如果有的话需要对其更新加QINIU_EXTEND
+        qiniuModel.dataTransfer()
+            .then(function () {
+                initContextMenus();
+            });
+    }
+});
 
 chrome.runtime.onMessage.addListener(function(data, messageSender, response) {
     // 将此值上传到七牛bucket当中
@@ -141,7 +154,7 @@ chrome.runtime.onMessage.addListener(function(data, messageSender, response) {
     if(data) {
 
 
-        qiniuController.getSetting().then(function(QINIU) {
+        qiniuController.getDefaultSetting().then(function(QINIU) {
 
             // 如果没有填,则给默认的
             if(typeof data.dir === 'undefined') {
@@ -163,11 +176,11 @@ chrome.runtime.onMessage.addListener(function(data, messageSender, response) {
 
                 qiniuController.uploadByBase64(data).then(function(callbackData) {
 
-                        response({
-                            action: 'OPEN_PAGE',
-                            tabId: tab.id,
-                            pageUrl: QINIU.domain + '/' + data.fileName
-                        });
+                    response({
+                        action: 'OPEN_PAGE',
+                        tabId: tab.id,
+                        pageUrl: QINIU.domain + '/' + data.fileName
+                    });
 
                 }, function() {
 
@@ -220,7 +233,7 @@ chrome.runtime.onMessage.addListener(function(data, messageSender, response) {
                 // console.log('get msg from ' + tab.id);
 
             } else if(data.action === 'REFRESH_CONTEXT_MENUS') {
-                // 
+                //
                 initContextMenus();
             }
         });
@@ -228,12 +241,12 @@ chrome.runtime.onMessage.addListener(function(data, messageSender, response) {
     }
 });
 
- // 绑定browserAction的点击事件
+// 绑定browserAction的点击事件
 chrome.browserAction.onClicked.addListener(function() {
     chrome.tabs.create({ url: chrome.extension.getURL('html/options.html') });
 });
 
- // after install, we open the options page
+// after install, we open the options page
 chrome.runtime.onInstalled.addListener(function () {
     chrome.tabs.create({ url: chrome.extension.getURL('html/options.html') });
 });

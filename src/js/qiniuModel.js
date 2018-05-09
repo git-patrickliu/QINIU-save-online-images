@@ -4,19 +4,42 @@
 
 var qiniuModel = {
 
+    getDefaultSetting: function () {
+        var that = this;
+        return new Promise(function (resolve, reject) {
+            var defaultBucket = {};
+            that.getSetting()
+                .then(function (QINIU) {
+                    defaultBucket.accessKey = QINIU.accessKey;
+                    defaultBucket.secretKey = QINIU.secretKey;
+
+                    var buckets = QINIU.buckets || [];
+                    buckets.forEach(function (bucket) {
+                        if(bucket.isDefault) {
+                            defaultBucket.bucket = bucket.bucket;
+                            defaultBucket.domain = bucket.domain;
+                            defaultBucket.allDirs = bucket.allDirs;
+                            defaultBucket.defaultDir = bucket.defaultDir;
+                        }
+                    });
+                    resolve(defaultBucket);
+                });
+        });
+    },
+
     getSetting: function() {
 
         return new Promise(function(resolve, reject) {
 
-            chrome.storage.local.get('QINIU', function(data) {
+            chrome.storage.local.get('QINIU_EXTEND', function(data) {
 
                 if(data) {
 
-                    var QINIU = data['QINIU'];
+                    var QINIU_EXTEND = data['QINIU_EXTEND'];
 
-                    if(QINIU && QINIU.accessKey && QINIU.secretKey && QINIU.domain && QINIU.bucket) {
+                    if(QINIU_EXTEND && QINIU_EXTEND.accessKey && QINIU_EXTEND.secretKey && QINIU_EXTEND.buckets.length !== 0) {
 
-                        resolve(QINIU);
+                        resolve(QINIU_EXTEND);
 
                     } else {
 
@@ -37,24 +60,46 @@ var qiniuModel = {
     setSetting: function(data) {
 
         return new Promise(function(resolve, reject) {
-            
-            var directories = data.directories;
-            if(directories) {
-                
-                data.defaultDir = directories.split(',')[0];
-                data.allDirs = directories.split(',');
-            } else {
-                // 根据directories来设置defaultDir
-                data.defaultDir = '';
-                data.allDirs = [''];
-            }
-
             chrome.storage.local.set({
-                QINIU: data
+                QINIU_EXTEND: data
             }, function() {
                 resolve();
             });
+        });
+    },
 
+    // 0.0.8以上有一个更新，需要dataTransfer
+    dataTransfer: function () {
+        var that = this;
+        return new Promise(function (resolve, reject) {
+            chrome.storage.local.get('QINIU', function(data) {
+                if(data['QINIU']) {
+                    var result = data['QINIU'];
+                    // 转成QINIU_EXTEND格式再存起来
+                    var QINIU_EXTEND = {
+                        accessKey: result.accessKey || '',
+                        secretKey: result.secretKey || '',
+                        buckets: [{
+                            bucket: result.bucket,
+                            domain: result.domain,
+                            allDirs: result.allDirs,
+                            defaultDir: result.defaultDir,
+                            isEditing: false,
+                            isDefault: true,
+                            inputVisible: false,
+                            inputValue: ''
+                        }]
+                    };
+                    that.setSetting(QINIU_EXTEND)
+                        .then(function () {
+                            resolve();
+                        }, function () {
+                            reject();
+                        });
+                } else {
+                    resolve();
+                }
+            });
         });
     },
 
@@ -82,7 +127,7 @@ var qiniuModel = {
 
         return new Promise(function(resolve, reject) {
 
-            that.getSetting().then(function(userData) {
+            that.getDefaultSetting().then(function(userData) {
 
                 data.token =
                     genUpToken(
@@ -126,7 +171,7 @@ var qiniuModel = {
 
         return new Promise(function(resolve, reject) {
 
-            that.getSetting().then(function(userData) {
+            that.getDefaultSetting().then(function(userData) {
 
                 data.token =
                     genAccessToken(
