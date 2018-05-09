@@ -293,7 +293,7 @@ code.google.com/p/crypto-js/wiki/License
  * utf16 = utf8to16(utf8);
  */
 
-function utf16to8(str) {
+export function utf16to8(str) {
     var out, i, len, c;
     out = "";
     len = str.length;
@@ -361,7 +361,7 @@ var base64DecodeChars = new Array(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
     15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1, -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
     41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1);
 
-function base64encode(str) {
+export function base64encode(str) {
     var out, i, len;
     var c1, c2, c3;
     len = str.length;
@@ -429,13 +429,14 @@ function base64decode(str) {
     }
     return out;
 }
-var safe64 = function (base64) {
+export const safe64 = function (base64) {
     base64 = base64.replace(/\+/g, "-");
     base64 = base64.replace(/\//g, "_");
     return base64;
 };
 
-var safe_base64_encode = function(str) {
-
-    return safe64(base64encode(str));
+export const safeBase64Encode = function(str) {
+  return safe64(base64encode(str));
 };
+
+export default CryptoJS;

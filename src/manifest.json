@@ -4,31 +4,28 @@
     "version": "0.1.0",
     "background": {
         "scripts": [
-          "js/jquery-1.9.1.js",
-          "js/CryptoJS.js",
-          "js/qiniuController.js",
-          "js/qiniuModel.js",
-          "js/background.js"
+          "static/js/manifest.js",
+          "static/js/background.js"
         ]
     },
     "content_scripts": [{
         "matches": ["http://*/*", "https://*/*"],
-        "js": ["js/contentscript.js"],
+        "js": ["static/js/manifest.js", "static/js/contentscript.js"],
         "run_at": "document_start",
         "all_frames": true
     }],
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
     "icons": {
-      "16": "img/save16.png",
-      "64": "img/save64.png",
-      "128": "img/save128.png"
+      "16": "static/favicon/save16.png",
+      "64": "static/favicon/save64.png",
+      "128": "static/favicon/save128.png"
     },
     "browser_action": {
-        "default_icon": "img/save16.png",
+        "default_icon": "static/favicon/save16.png",
         "default_title": "七牛在线存图",
-        "default_popup": "html/popup.html"
+        "default_popup": "popup.html"
     },
-    "options_page": "html/options.html",
+    "options_page": "options.html",
     "permissions": [
         "http://*/",
         "https://*/",
