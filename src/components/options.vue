@@ -35,7 +35,7 @@
           </el-table-column>
           <el-table-column prop="region" label="region" width="200">
             <template slot-scope="scope">
-              <el-select v-model="scope.row.region" placeholder="请选择">
+              <el-select v-model="scope.row.region" placeholder="请选择" v-if="scope.row.isEditing">
                 <el-option
                   v-for="item in regionOptions"
                   :key="item.value"

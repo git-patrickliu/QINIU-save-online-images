@@ -21,6 +21,7 @@ const qiniuModel = {
               defaultBucket.domain = bucket.domain;
               defaultBucket.allDirs = bucket.allDirs;
               defaultBucket.defaultDir = bucket.defaultDir;
+              defaultBucket.region = bucket.region;
             }
           });
           resolve(defaultBucket);
