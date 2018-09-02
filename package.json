@@ -1,6 +1,6 @@
 {
   "name": "qiniu-save-online-images",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An extension to quickly save images to qiniu",
   "author": "phil.liu.cn@gmail.com",
   "private": true,
