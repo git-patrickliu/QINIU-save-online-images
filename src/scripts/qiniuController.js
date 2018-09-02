@@ -5,12 +5,21 @@
 import { safeBase64Encode } from './CryptoJS';
 import qiniuModel from './qiniuModel';
 
+const UPLOAD_URL = {
+  'z0': 'http://up.qiniup.com',
+  'z1': 'http://up-z1.qiniup.com',
+  'z2': 'http://up-z2.qiniup.com',
+  'na0': 'http://up-na0.qiniup.com',
+  'as0': 'http://up-as0.qiniup.com',
+}
+
 const qiniuController = {
   uploadByBase64: data =>
     new Promise((resolve, reject) => {
       qiniuController.getUpToken(data).then((callbackData) => {
         const { token, base64 } = callbackData.data;
-        const url = 'http://up.qiniu.com/putb64/-1';
+        const { region = 'z0' } = callbackData.userData;
+        const url = `${UPLOAD_URL[region]}/putb64/-1`;
         const xhr = new XMLHttpRequest();
         xhr.onreadystatechange = () => {
           if (xhr.readyState === 4 && xhr.status === 200) {

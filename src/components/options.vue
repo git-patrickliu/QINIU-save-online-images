@@ -33,6 +33,19 @@
               <template v-else>{{scope.row.bucket}}</template>
             </template>
           </el-table-column>
+          <el-table-column prop="region" label="region" width="200">
+            <template slot-scope="scope">
+              <el-select v-model="scope.row.region" placeholder="请选择">
+                <el-option
+                  v-for="item in regionOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+              <template v-else>{{regionHash[scope.row.region]}}</template>
+            </template>
+          </el-table-column>
           <el-table-column prop="domain" label="域名" width="300">
             <template slot-scope="scope">
               <el-input
@@ -76,7 +89,8 @@
                   class="button-new-tag"
                   size="small"
                   @click="showInput(scope.row)"
-                >+ New Tag</el-button>
+                >+ New Tag
+                </el-button>
               </template>
             </template>
           </el-table-column>
@@ -115,138 +129,179 @@
           <el-button type="primary" @click="onSubmit">保存一下</el-button>
         </el-form-item>
       </el-form>
-      <div class="feedback"><i class="el-icon-message"></i><a target="_blank" href="https://github.com/git-patrickliu/QINIU-save-online-images/issues">feedback</a></div>
+      <div class="feedback"><i class="el-icon-message"></i><a target="_blank"
+                                                              href="https://github.com/git-patrickliu/QINIU-save-online-images/issues">feedback</a>
+      </div>
     </div>
   </div>
 </template>
 <script>
-import ElButton from 'element-ui/packages/button/src/button';
-import qiniuController from '../scripts/qiniuController';
+  import ElButton from 'element-ui/packages/button/src/button';
+  import qiniuController from '../scripts/qiniuController';
 
-export default {
-  components: { ElButton },
-  created() {
-    qiniuController.getSetting()
-      .then((data) => {
-        if (data) {
-          this.accessKey = data.accessKey;
-          this.secretKey = data.secretKey;
-          this.isSelfDefinePicName = data.isSelfDefinePicName;
-          this.buckets = data.buckets;
-        }
-      });
-  },
-  data() {
-    return {
-      accessKey: '',
-      secretKey: '',
-      isSelfDefinePicName: false,
-      buckets: [{
-        bucket: '',
-        domain: '',
-        allDirs: [''],
-        defaultDir: '',
-        isEditing: false,
-        isDefault: true,
-        inputVisible: false,
-        inputValue: '',
-      }],
-    };
-  },
-  methods: {
-    onSubmit() {
-      qiniuController.setSetting(this.$data)
-        .then(() => {
-          this.$message({
-            message: '保存成功',
-            type: 'success',
-          });
+  export default {
+    components: {ElButton},
+    created() {
+      qiniuController.getSetting()
+        .then((data) => {
+          if (data) {
+            this.accessKey = data.accessKey;
+            this.secretKey = data.secretKey;
+            this.isSelfDefinePicName = data.isSelfDefinePicName;
+            this.buckets = data.buckets;
+            // 如果buckets
+            this.buckets.forEach((item) => {
+              if(typeof item.region === 'undefined') {
+                // 初始化为z0
+                item.region = 'z0';
+              }
+            });
+          }
         });
     },
-    handleInputConfirm(inputValue, row) {
-      const r = row;
-      if (r.allDirs.indexOf(inputValue) === -1 && inputValue.indexOf('/') !== 0) {
-        r.allDirs.push(inputValue);
-        r.inputVisible = false;
-        r.inputValue = '';
-      }
-    },
-    setDefault(index, buckets) {
-      buckets.forEach((tr, key) => {
-        const tmpTr = tr;
-        if (key !== index) {
-          tmpTr.isDefault = false;
-        } else {
-          tmpTr.isDefault = true;
-        }
-      });
-    },
-    showInput(row) {
-      const r = row;
-      r.inputVisible = true;
-      this.$nextTick(_ => {
-        this.$refs.saveTagInput.$refs.input.focus();
-      });
-    },
-    handleCloseTag(index, row) {
-      if (row.allDirs[index]) {
-        row.allDirs.splice(index, 1);
-      } else {
-        this.$message({
-          message: '不能删除bucket根目录上传地址',
-          type: 'warning',
-        });
-      }
-    },
-    handleClick(action, index, row, buckets) {
-      const r = row;
-      if (action === 'delete') {
-        if (r.isDefault) {
-          this.$message({
-            message: '该bucket为默认，不能删除',
-            type: 'warning',
-          });
-          return;
-        }
-        this.$confirm('确认删除该bucket配置吗?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-        }).then(() => {
-          buckets.splice(index, 1);
-        }).catch(() => {
-        });
-      } else if (action === 'edit') {
-        if (r.isEditing) {
-          // 将已有的值设置进row里面
-          // 正在编辑中，现在用户点击确定
-        } else {
-          // 用户准备编辑, 预先保存一下
-          r._bucket = r.bucket; // eslint-disable-line no-underscore-dangle
-          r._domain = r.domain; // eslint-disable-line no-underscore-dangle
-          r._subfolder = r.subfolder; // eslint-disable-line no-underscore-dangle
-        }
-        r.isEditing = !r.isEditing;
-      } else if (action === 'add') {
-        buckets.push({
+    data() {
+      return {
+        accessKey: '',
+        secretKey: '',
+        // https://developer.qiniu.com/kodo/manual/1671/region-endpoint
+        regionOptions: [
+          {
+            value: 'z0',
+            label: '华东',
+          },
+          {
+            value: 'z1',
+            label: '华北',
+          },
+          {
+            value: 'z2',
+            label: '华南',
+          },
+          {
+            value: 'na0',
+            label: '北美',
+          },
+          {
+            value: 'as0',
+            label: '东南亚',
+          }
+        ],
+        regionHash: {
+          'z0': '华东',
+          'z1': '华北',
+          'z2': '华南',
+          'na0': '北美',
+          'as0': '东南亚',
+        },
+        isSelfDefinePicName: false,
+        buckets: [{
           bucket: '',
           domain: '',
           allDirs: [''],
           defaultDir: '',
-          isEditing: true,
-          isDefault: false,
+          isEditing: false,
+          isDefault: true,
           inputVisible: false,
           inputValue: '',
-        });
-      } else if (action === 'cancel') {
-        r.isEditing = false;
-        r.bucket = r._bucket; // eslint-disable-line no-underscore-dangle
-        r.domain = r._domain; // eslint-disable-line no-underscore-dangle
-        r.subfolder = r._subfolder; // eslint-disable-line no-underscore-dangle
-      }
+          region: 'z0',
+        }],
+      };
     },
-  },
-};
+    methods: {
+      onSubmit() {
+        qiniuController.setSetting(this.$data)
+          .then(() => {
+            this.$message({
+              message: '保存成功',
+              type: 'success',
+            });
+          });
+      },
+      handleInputConfirm(inputValue, row) {
+        const r = row;
+        if (r.allDirs.indexOf(inputValue) === -1 && inputValue.indexOf('/') !== 0) {
+          r.allDirs.push(inputValue);
+          r.inputVisible = false;
+          r.inputValue = '';
+        }
+      },
+      setDefault(index, buckets) {
+        buckets.forEach((tr, key) => {
+          const tmpTr = tr;
+          if (key !== index) {
+            tmpTr.isDefault = false;
+          } else {
+            tmpTr.isDefault = true;
+          }
+        });
+      },
+      showInput(row) {
+        const r = row;
+        r.inputVisible = true;
+        this.$nextTick(_ => {
+          this.$refs.saveTagInput.$refs.input.focus();
+        });
+      },
+      handleCloseTag(index, row) {
+        if (row.allDirs[index]) {
+          row.allDirs.splice(index, 1);
+        } else {
+          this.$message({
+            message: '不能删除bucket根目录上传地址',
+            type: 'warning',
+          });
+        }
+      },
+      handleClick(action, index, row, buckets) {
+        const r = row;
+        if (action === 'delete') {
+          if (r.isDefault) {
+            this.$message({
+              message: '该bucket为默认，不能删除',
+              type: 'warning',
+            });
+            return;
+          }
+          this.$confirm('确认删除该bucket配置吗?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }).then(() => {
+            buckets.splice(index, 1);
+          }).catch(() => {
+          });
+        } else if (action === 'edit') {
+          if (r.isEditing) {
+            // 将已有的值设置进row里面
+            // 正在编辑中，现在用户点击确定
+          } else {
+            // 用户准备编辑, 预先保存一下
+            r._bucket = r.bucket; // eslint-disable-line no-underscore-dangle
+            r._domain = r.domain; // eslint-disable-line no-underscore-dangle
+            r._subfolder = r.subfolder; // eslint-disable-line no-underscore-dangle
+          }
+          r.isEditing = !r.isEditing;
+        } else if (action === 'add') {
+          buckets.push({
+            bucket: '',
+            domain: '',
+            allDirs: [''],
+            defaultDir: '',
+            isEditing: true,
+            isDefault: false,
+            inputVisible: false,
+            inputValue: '',
+            region: 'z0',
+          });
+        } else if (action === 'cancel') {
+          r.isEditing = false;
+          r.bucket = r._bucket; // eslint-disable-line no-underscore-dangle
+          r.domain = r._domain; // eslint-disable-line no-underscore-dangle
+          r.subfolder = r._subfolder; // eslint-disable-line no-underscore-dangle
+        }
+      },
+    },
+  };
 </script>
 <style>
   body {
@@ -296,6 +351,7 @@ export default {
     color: #000;
     text-decoration: none;
   }
+
   .feedback a:visited {
     color: #000;
   }
